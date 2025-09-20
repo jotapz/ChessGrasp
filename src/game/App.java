@@ -14,8 +14,8 @@ public class App {
         frame.setLayout(new GridBagLayout());
         frame.setMinimumSize(new DimensionUIResource(1000, 1000));
         frame.setLocationRelativeTo(null);
-        Board board = new Board();
-        frame.add(board);
+        Tabuleiro tabuleiro = new Tabuleiro();
+        frame.add(tabuleiro);
         frame.setVisible(true);
     }
 
