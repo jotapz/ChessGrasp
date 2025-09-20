@@ -1,12 +1,14 @@
+package game;
 
 import java.awt.*;
+
+
 import javax.swing.JFrame;
 import javax.swing.plaf.DimensionUIResource;
 
-public class Main {
+public class App {
     public static void main(String[] args) throws Exception {
-
-        //interface jframe
+         //interface jframe
         JFrame frame = new JFrame();
         frame.getContentPane().setBackground(new Color(255, 141, 0));
         frame.setLayout(new GridBagLayout());
@@ -15,6 +17,6 @@ public class Main {
         Board board = new Board();
         frame.add(board);
         frame.setVisible(true);
-
     }
+
 }
