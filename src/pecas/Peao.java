@@ -41,6 +41,25 @@ public class Peao extends Peca{
             return true;
         }
 
+        // en passant esquerda
+        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && coluna == this.coluna - 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha +colorIndex) != null){
+            return true;
+        }
+
+        // en passant direita
+        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && coluna == this.coluna + 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha +colorIndex) != null){
+            return true;
+        }
+
+//        // capture left or right
+//        if (Math.abs(coluna - this.coluna) == 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha) != null)
+//            return true;
+//
+//        // en passant left or right
+//        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && Math.abs(coluna - this.coluna) == 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha + colorIndex) != null)
+//            return true;
+
+
         return false;
     }
 }

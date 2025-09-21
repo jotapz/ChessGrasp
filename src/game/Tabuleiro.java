@@ -11,8 +11,8 @@ public class Tabuleiro extends JPanel{
 
     public int tileSize = 85;
 
-    int coluna = 8;
-    int linha = 8;
+    int colunas = 8;
+    int linhas = 8;
 
     ArrayList<Peca> listaPecas= new ArrayList<>();
 
@@ -22,9 +22,11 @@ public class Tabuleiro extends JPanel{
     Input input = new Input(this);
     private Tabuleiro tabuleiro;
 
+    public int enPassantTile = -1;
+
     public Tabuleiro(){
 
-        this.setPreferredSize(new Dimension(coluna * tileSize, linha * tileSize));
+        this.setPreferredSize(new Dimension(colunas * tileSize, linhas * tileSize));
         adicionarPecas();
 
         this.addMouseListener(input);
@@ -44,17 +46,54 @@ public class Tabuleiro extends JPanel{
     }
 
     public void makeMove(Move move){
+        if (move.peca.nome.equals("Peao")){
+            movePeao(move);
+        } else {
+            move.peca.coluna = move.colNova;
+            move.peca.linha = move.linNova;
+            move.peca.xPos = move.colNova * tileSize;
+            move.peca.yPos = move.linNova * tileSize;
+
+            move.peca.ehPrimeiroMovimento = false;
+            capturar(move.capturar);
+        }
+    }
+
+    private void movePeao(Move move) {
+        // en passant
+        int colorIndex = move.peca.ehBranco ? 1 : -1;
+
+        if (getTileNum(move.colNova, move.linNova) == enPassantTile){
+            move.capturar = getPeca(move.colNova, move.linNova + colorIndex);
+        }
+        if (Math.abs(move.peca.linha - move.linNova) == 2){
+            enPassantTile = getTileNum(move.colNova, move.linNova + colorIndex);
+        } else{
+            enPassantTile = -1;
+        }
+
+        // promoções
+        colorIndex = move.peca.ehBranco ? 0 : 7;
+        if (move.linNova == colorIndex) {
+            promovePeao(move);
+        }
+
         move.peca.coluna = move.colNova;
         move.peca.linha = move.linNova;
         move.peca.xPos = move.colNova * tileSize;
         move.peca.yPos = move.linNova * tileSize;
 
         move.peca.ehPrimeiroMovimento = false;
-        capturar(move);
+        capturar(move.capturar);
     }
 
-    public void capturar(Move move){
-        listaPecas.remove(move.capturar);
+    private void promovePeao(Move move) {
+        listaPecas.add(new Rainha(this, move.colNova, move.linNova, move.peca.ehBranco));
+        capturar(move.peca);
+    }
+
+    public void capturar(Peca peca){
+        listaPecas.remove(peca);
     }
 
     public boolean isValidMove(Move move){
@@ -77,6 +116,10 @@ public class Tabuleiro extends JPanel{
             return false;
         }
         return p1.ehBranco == p2.ehBranco;
+    }
+
+    public int getTileNum(int coluna, int linha) {
+        return linha * linhas + coluna;
     }
 
 
@@ -150,15 +193,16 @@ public class Tabuleiro extends JPanel{
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
-        for (int c = 0; c < coluna; c++)
-        for (int l = 0; l < linha; l++) {
-            g2d.setColor((c+l) % 2 == 0 ? new Color(255, 129, 0) : new Color(255, 201, 0));
-            g2d.fillRect(c * tileSize,  l * tileSize, tileSize, tileSize);
+        for (int c = 0; c < colunas; c++) {
+            for (int l = 0; l < linhas; l++) {
+                g2d.setColor((c + l) % 2 == 0 ? new Color(255, 129, 0) : new Color(255, 201, 0));
+                g2d.fillRect(c * tileSize, l * tileSize, tileSize, tileSize);
+            }
         }
 
         if (selectedPeca != null)
-            for(int l = 0; l < linha; l++)
-                for(int c = 0; c < coluna; c++) {
+            for(int l = 0; l < linhas; l++)
+                for(int c = 0; c < colunas; c++) {
                     if (isValidMove(new Move(this, selectedPeca, c, l))) {
                         g2d.setColor(new Color(68,180,57, 190));
                         g2d.fillRect(c * tileSize, l * tileSize, tileSize, tileSize);
