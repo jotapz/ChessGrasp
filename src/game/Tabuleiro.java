@@ -15,12 +15,60 @@ public class Tabuleiro extends JPanel{
 
     ArrayList<Peca> listaPecas= new ArrayList<>();
 
+    // peça selecionada para mover
+    public Peca selectedPeca;
+
+    Input input = new Input(this);
 
     public Tabuleiro(){
 
         this.setPreferredSize(new Dimension(coluna * tileSize, linha * tileSize));
         adicionarPecas();
+
+        this.addMouseListener(input);
+        this.addMouseMotionListener(input);
     }
+
+    // pegar a peça
+    public Peca getPeca(int coluna, int linha) {
+
+        for (Peca peca : listaPecas){
+            if (peca.coluna == coluna && peca.linha == linha){
+                return peca;
+            }
+        }
+
+        return null;
+    }
+
+    public void makeMove(Move move){
+        move.peca.coluna = move.colNova;
+        move.peca.linha = move.linNova;
+        move.peca.xPos = move.colNova * tileSize;
+        move.peca.yPos = move.linNova * tileSize;
+
+        capturar(move);
+    }
+
+    public void capturar(Move move){
+        listaPecas.remove(move.capturar);
+    }
+
+    public boolean isValidMove(Move move){
+        if (mesmoTime(move.peca, move.capturar)){
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean mesmoTime(Peca p1, Peca p2) {
+        if (p1 == null || p2 == null){
+            return false;
+        }
+        return p1.ehBranco == p2.ehBranco;
+    }
+
 
     public void adicionarPecas(){
 
