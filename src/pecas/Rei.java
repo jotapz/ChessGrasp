@@ -19,5 +19,10 @@ public class Rei extends Peca{
         this.sprite = sheet.getSubimage(0, ehBranco ? 0 : sheetScale, sheetScale, sheetScale).getScaledInstance(tabuleiro.tileSize, tabuleiro.tileSize, BufferedImage.SCALE_SMOOTH);
     }
 
+    public boolean isValidMovement(int colunas, int linhas) {
+        int dx = Math.abs(colunas - this.coluna);
+        int dy = Math.abs(linhas - this.linha);
+        return Math.max(dx, dy) == 1;
 
+    }
 }

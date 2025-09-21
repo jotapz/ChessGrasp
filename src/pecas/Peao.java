@@ -18,4 +18,29 @@ public class Peao extends Peca{
 
         this.sprite = sheet.getSubimage(5 * sheetScale, ehBranco ? 0 : sheetScale, sheetScale, sheetScale).getScaledInstance(tabuleiro.tileSize, tabuleiro.tileSize, BufferedImage.SCALE_SMOOTH);
     }
+
+    @Override
+    public boolean isValidMovement(int colunas, int linhas) {
+        int colorIndex = ehBranco ? 1: -1;
+
+        //
+        if (this.coluna == colunas && linhas == this.linha - colorIndex && tabuleiro.getPeca(colunas, linhas) == null){
+            return true;
+        }
+
+        if (ehPrimeiroMovimento && this.coluna == colunas && linhas == this.linha - colorIndex * 2 && tabuleiro.getPeca(colunas, linhas) == null && tabuleiro.getPeca(colunas, linhas + colorIndex) == null){
+            return true;
+        }
+
+        // Captura esquerda
+        if (colunas == this.coluna - 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(colunas, linhas) != null){
+            return true;
+        }
+
+        if (colunas == this.coluna + 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(colunas, linhas) != null){
+            return true;
+        }
+
+        return false;
+    }
 }
