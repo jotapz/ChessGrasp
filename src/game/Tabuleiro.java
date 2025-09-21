@@ -87,6 +87,8 @@ public class Tabuleiro extends JPanel{
         listaPecas.add(new Peao(this, 6, 6, true));
         listaPecas.add(new Peao(this, 6, 7, true));
     }
+
+
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
