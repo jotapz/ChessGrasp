@@ -16,6 +16,7 @@ public class Peca {
 
     public Integer valor;
 
+    public boolean ehPrimeiroMovimento = true;
     BufferedImage sheet;
     {
         try{

@@ -18,4 +18,6 @@ public class Rei extends Peca{
 
         this.sprite = sheet.getSubimage(0, ehBranco ? 0 : sheetScale, sheetScale, sheetScale).getScaledInstance(tabuleiro.tileSize, tabuleiro.tileSize, BufferedImage.SCALE_SMOOTH);
     }
+
+
 }

@@ -47,6 +47,7 @@ public class Tabuleiro extends JPanel{
         move.peca.xPos = move.colNova * tileSize;
         move.peca.yPos = move.linNova * tileSize;
 
+        move.peca.ehPrimeiroMovimento = false;
         capturar(move);
     }
 
