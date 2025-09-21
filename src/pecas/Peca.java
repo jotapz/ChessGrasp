@@ -36,6 +36,10 @@ public class Peca {
         this.tabuleiro = tabuleiro;
     }
 
+    public boolean isValidMovement(int colunas, int linhas) {return true;}
+    public boolean moveCollidesWithPiece(int colunas, int linhas) {return false;}
+
+
     public void paint(Graphics g2d){
         g2d.drawImage(sprite, xPos, yPos, null);
     }
