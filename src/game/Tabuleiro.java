@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 
+
 public class Tabuleiro extends JPanel{
 
     public int tileSize = 85;
@@ -19,6 +20,7 @@ public class Tabuleiro extends JPanel{
     public Peca selectedPeca;
 
     Input input = new Input(this);
+    private Tabuleiro tabuleiro;
 
     public Tabuleiro(){
 
@@ -58,6 +60,13 @@ public class Tabuleiro extends JPanel{
         if (mesmoTime(move.peca, move.capturar)){
             return false;
         }
+       if (!move.peca.isValidMovement(move.colNova, move.linNova)) {
+           return false;
+        }
+
+       if(move.peca.moveCollidesWithPiece(move.colNova, move.linNova)) {
+           return false;
+       }
 
         return true;
     }
@@ -143,6 +152,16 @@ public class Tabuleiro extends JPanel{
             g2d.setColor((c+l) % 2 == 0 ? new Color(255, 129, 0) : new Color(255, 201, 0));
             g2d.fillRect(c * tileSize,  l * tileSize, tileSize, tileSize);
         }
+
+        if (selectedPeca != null)
+            for(int l = 0; l < linha; l++)
+                for(int c = 0; c < coluna; c++) {
+                    if (isValidMove(new Move(this, selectedPeca, c, l))) {
+                        g2d.setColor(new Color(68,180,57, 190));
+                        g2d.fillRect(c * tileSize, l * tileSize, tileSize, tileSize);
+                    }
+                }
+
 
         for (Peca peca: listaPecas){
             peca.paint(g2d);
