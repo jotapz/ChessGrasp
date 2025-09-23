@@ -24,6 +24,8 @@ public class Tabuleiro extends JPanel{
     Input input = new Input(this);
     private Tabuleiro tabuleiro;
 
+    CheckScanner checkScanner = new CheckScanner(this);
+
     public int enPassantTile = -1;
 
     public Tabuleiro(){
@@ -160,6 +162,9 @@ public class Tabuleiro extends JPanel{
        if(move.peca.moveCollidesWithPiece(move.colNova, move.linNova)) {
            return false;
        }
+       if (checkScanner.reiEhAtacado(move)) {
+           return false;
+       }
 
         return true;
     }
@@ -175,6 +180,14 @@ public class Tabuleiro extends JPanel{
         return linha * linhas + coluna;
     }
 
+    Peca achaRei(boolean ehBranco){
+        for(Peca peca : listaPecas){
+            if(ehBranco == peca.ehBranco && peca.nome.equals("Rei")){
+                return peca;
+            }
+        }
+        return null;
+    }
 
     public void adicionarPecas() {
         listaPecas.addAll(FabricadorPecas.criarPecas(this));

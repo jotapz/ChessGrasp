@@ -11,8 +11,6 @@ public class Peao extends Peca{
         this.linha = linha;
         this.coluna = coluna;
 
-
-
         this.xPos = coluna * tabuleiro.tileSize;
         this.yPos = linha * tabuleiro.tileSize;
 
@@ -45,23 +43,23 @@ public class Peao extends Peca{
             return true;
         }
 
-        // en passant esquerda
-        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && coluna == this.coluna - 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha +colorIndex) != null){
-            return true;
-        }
-
-        // en passant direita
-        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && coluna == this.coluna + 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha +colorIndex) != null){
-            return true;
-        }
-
-//        // capture left or right
-//        if (Math.abs(coluna - this.coluna) == 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha) != null)
+//        // en passant esquerda
+//        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && colunas == this.coluna - 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha +colorIndex) != null){
 //            return true;
+//        }
 //
-//        // en passant left or right
-//        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && Math.abs(coluna - this.coluna) == 1 && linha == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha + colorIndex) != null)
+//        // en passant direita
+//        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && colunas == this.coluna + 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha +colorIndex) != null){
 //            return true;
+//        }
+
+        // capturar esquerda ou direita
+        if (Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha) != null)
+            return true;
+
+        // en passant esquerda ou direita
+        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha + colorIndex) != null)
+            return true;
 
 
         return false;
