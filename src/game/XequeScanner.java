@@ -4,12 +4,80 @@ import pecas.Peca;
 
 public class XequeScanner {
     Tabuleiro tabuleiro;
+
     public XequeScanner(Tabuleiro tabuleiro){
         this.tabuleiro = tabuleiro;
     }
 
-    public boolean reiEhAtacado(Move move){
 
+    /** Está em xeque o lado (ehBranco) na posição atual */
+    public boolean estaEmXeque(boolean ehBranco) {
+        Peca rei = tabuleiro.achaRei(ehBranco);
+        if (rei == null) return false; // segurança
+        int reiCol = rei.coluna;
+        int reiLin = rei.linha;
+
+        // IMPORTANTÍSSIMO: garantir que não há peça "selecionada" interferindo
+        Peca sel = tabuleiro.selectedPeca;
+        tabuleiro.selectedPeca = null;
+
+        boolean atacado =
+                hitByTorre(-1, -1, rei, reiCol, reiLin, 0, 1)   // cima
+                        || hitByTorre(-1, -1, rei, reiCol, reiLin, 1, 0)   // direita
+                        || hitByTorre(-1, -1, rei, reiCol, reiLin, 0, -1)  // baixo
+                        || hitByTorre(-1, -1, rei, reiCol, reiLin, -1, 0)  // esquerda
+                        || hitByBispo(-1, -1, rei, reiCol, reiLin, -1, -1) // esq-cima
+                        || hitByBispo(-1, -1, rei, reiCol, reiLin,  1, -1) // dir-cima
+                        || hitByBispo(-1, -1, rei, reiCol, reiLin,  1,  1) // dir-baixo
+                        || hitByBispo(-1, -1, rei, reiCol, reiLin, -1,  1) // esq-baixo
+                        || hitByCavalo(-1, -1, rei, reiCol, reiLin)
+                        || hitByPeao(-1, -1, rei, reiCol, reiLin)
+                        || hitByRei(rei, reiCol, reiLin);
+
+        tabuleiro.selectedPeca = sel;
+        return atacado;
+    }
+
+    /** Existe ALGUM movimento legal para o lado (ehBranco)? */
+    public boolean temMovimentoLegal(boolean ehBranco) {
+        // para cada peça do lado a jogar
+        for (Peca p : tabuleiro.listaPecas) {
+            if (p.ehBranco != ehBranco) continue;
+
+            // varrer todo o tabuleiro como destino
+            for (int l = 0; l < 8; l++) {
+                for (int c = 0; c < 8; c++) {
+                    Move m = new Move(tabuleiro, p, c, l);
+
+                    // IMPORTANTÍSSIMO: o isValidMove usa selectedPeca e reiEhAtacado(move),
+                    // então setamos a selectedPeca temporariamente para simular corretamente.
+                    Peca selAnt = tabuleiro.selectedPeca;
+                    tabuleiro.selectedPeca = p;
+                    boolean valido = tabuleiro.isValidMove(m);
+                    tabuleiro.selectedPeca = selAnt;
+
+                    if (valido) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Xeque-mate ao lado (ehBranco) na posição atual */
+    public boolean estaEmXequeMate(boolean ehBranco) {
+        return estaEmXeque(ehBranco) && !temMovimentoLegal(ehBranco);
+    }
+
+    /** Afogamento (stalemate) ao lado (ehBranco) na posição atual */
+    public boolean estaEmAfogamento(boolean ehBranco) {
+        return !estaEmXeque(ehBranco) && !temMovimentoLegal(ehBranco);
+    }
+
+    // === Verificação de xeque durante um movimento hipotético ===
+
+    public boolean reiEhAtacado(Move move){
         Peca rei = tabuleiro.achaRei(move.peca.ehBranco);
         assert rei != null;
 
@@ -36,7 +104,9 @@ public class XequeScanner {
                 hitByRei(rei, reiCol, reiLin);
     }
 
-    private  boolean hitByTorre(int coluna, int linha, Peca rei, int reiCol, int reiLin, int colVal, int linVal){
+    // === Helpers privados (como você já tinha) ===
+
+    private boolean hitByTorre(int coluna, int linha, Peca rei, int reiCol, int reiLin, int colVal, int linVal){
         for (int i = 1; i < 8; i++) {
             if (tabuleiro.selectedPeca != null && !tabuleiro.selectedPeca.nome.equals("Rei")) {
                 if (reiCol + (i * colVal) == coluna && reiLin + (i * linVal) == linha) {
@@ -54,8 +124,7 @@ public class XequeScanner {
         return false;
     }
 
-
-    private  boolean hitByBispo(int coluna, int linha, Peca rei, int reiCol, int reiLin, int colVal, int linVal){
+    private boolean hitByBispo(int coluna, int linha, Peca rei, int reiCol, int reiLin, int colVal, int linVal){
         for (int i = 1; i < 8; i++) {
             if (tabuleiro.selectedPeca != null && !tabuleiro.selectedPeca.nome.equals("Rei")) {
                 if (reiCol - (i * colVal) == coluna && reiLin - (i * linVal) == linha) {
@@ -88,7 +157,6 @@ public class XequeScanner {
         return p != null && !tabuleiro.mesmoTime(p, r) && p.nome.equals("Cavalo") && !(p.coluna == coluna && p.linha == linha);
     }
 
-
     private boolean hitByRei(Peca rei, int reiCol, int reiLin){
         return  xequeRei(tabuleiro.getPeca(reiCol - 1, reiLin - 1), rei) ||
                 xequeRei(tabuleiro.getPeca(reiCol + 1, reiLin - 1), rei) ||
@@ -113,5 +181,4 @@ public class XequeScanner {
     private boolean xequePeao(Peca p, Peca r, int coluna, int linha){
         return p != null && !tabuleiro.mesmoTime(p, r) && p.nome.equals("Peao") && !(p.coluna == coluna && p.linha == linha);
     }
-
 }

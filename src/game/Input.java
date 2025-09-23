@@ -1,67 +1,79 @@
 package game;
+
 import pecas.Peca;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 public class Input extends MouseAdapter {
 
-    Tabuleiro tabuleiro;
+    private final Tabuleiro tabuleiro;
 
-    public Input(Tabuleiro tabuleiro){
+    private int origemCol;
+    private int origemLin;
+
+    public Input(Tabuleiro tabuleiro) {
         this.tabuleiro = tabuleiro;
     }
 
-
     @Override
     public void mousePressed(MouseEvent e) {
+        int col = e.getX() / tabuleiro.tileSize;
+        int lin = e.getY() / tabuleiro.tileSize;
 
-        int coluna = e.getX() / tabuleiro.tileSize;
-        int linha = e.getY() / tabuleiro.tileSize;
+        Peca p = tabuleiro.getPeca(col, lin);
 
-        Peca pecaXY = tabuleiro.getPeca(coluna, linha);
-        if (pecaXY != null) {
-            tabuleiro.selectedPeca = pecaXY;
+        // só permite selecionar se for a vez daquela cor
+        if (p != null && p.ehBranco == tabuleiro.isTurnoBrancas()) {
+            tabuleiro.selectedPeca = p;
+            origemCol = p.coluna;
+            origemLin = p.linha;
+        } else {
+            tabuleiro.selectedPeca = null; // ignora clique em peça do oponente
         }
+        tabuleiro.repaint();
     }
-
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (tabuleiro.selectedPeca == null) return;
 
-        if (tabuleiro.selectedPeca != null){
-            tabuleiro.selectedPeca.xPos = e.getX() - tabuleiro.tileSize / 2;
-            tabuleiro.selectedPeca.yPos = e.getY() - tabuleiro.tileSize / 2;
-
-            tabuleiro.repaint();
-
-        }
+        // arrasto visual da peça (centra no cursor)
+        tabuleiro.selectedPeca.xPos = e.getX() - tabuleiro.tileSize / 2;
+        tabuleiro.selectedPeca.yPos = e.getY() - tabuleiro.tileSize / 2;
+        tabuleiro.repaint();
     }
-
-
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if (tabuleiro.selectedPeca == null) return;
 
-        int coluna = e.getX() / tabuleiro.tileSize;
-        int linha = e.getY() / tabuleiro.tileSize;
+        int alvoCol = clamp(e.getX() / tabuleiro.tileSize, 0, 7);
+        int alvoLin = clamp(e.getY() / tabuleiro.tileSize, 0, 7);
 
-        if (tabuleiro.selectedPeca != null) {
-            Move move = new Move(tabuleiro, tabuleiro.selectedPeca, coluna, linha);
+        Peca p = tabuleiro.selectedPeca;
 
-            if (tabuleiro.isValidMove(move)){
-                tabuleiro.makeMove(move);
-            } else {
-                tabuleiro.selectedPeca.xPos = tabuleiro.selectedPeca.coluna * tabuleiro.tileSize;
-                tabuleiro.selectedPeca.yPos = tabuleiro.selectedPeca.linha * tabuleiro.tileSize;
-            }
+        Move move = new Move(tabuleiro, p, alvoCol, alvoLin);
+
+        // tenta aplicar (respeita turno, validade, xeque…)
+        tabuleiro.makeMove(move);
+
+        // checa se moveu mesmo: compara posição final com alvo
+        boolean moveAplicado = (p.coluna == alvoCol && p.linha == alvoLin);
+
+        if (!moveAplicado) {
+            // snap-back
+            p.coluna = origemCol;
+            p.linha  = origemLin;
+            p.xPos   = origemCol * tabuleiro.tileSize;
+            p.yPos   = origemLin  * tabuleiro.tileSize;
         }
 
         tabuleiro.selectedPeca = null;
         tabuleiro.repaint();
     }
 
-
-
+    private int clamp(int v, int min, int max) {
+        return Math.max(min, Math.min(max, v));
+    }
 }
