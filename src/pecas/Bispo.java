@@ -1,6 +1,7 @@
 package pecas;
 
 import game.Tabuleiro;
+import util.enume.TiposPecas;
 
 import java.awt.image.BufferedImage;
 
@@ -15,6 +16,7 @@ public class Bispo extends Peca{
 
         this.ehBranco = ehBranco;
         this.nome = "Bispo";
+        this.tipo = TiposPecas.BISPO;
 
         this.sprite = sheet.getSubimage(2* sheetScale, ehBranco ? 0 : sheetScale, sheetScale, sheetScale).getScaledInstance(tabuleiro.tileSize, tabuleiro.tileSize, BufferedImage.SCALE_SMOOTH);
     }

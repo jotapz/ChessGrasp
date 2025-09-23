@@ -1,6 +1,7 @@
 package pecas;
 
 import game.Tabuleiro;
+import util.enume.TiposPecas;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,6 +15,8 @@ public class Peca {
     public boolean ehBranco;
     public String nome;
 
+
+    public TiposPecas tipo;
     public Integer valor;
 
     public boolean ehPrimeiroMovimento = true;

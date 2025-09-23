@@ -5,16 +5,18 @@ import pecas.*;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
-
+import util.classes.FabricadorPecas;
+import util.classes.PainelScore;
 
 public class Tabuleiro extends JPanel{
 
     public int tileSize = 85;
+    private PainelScore painelScore;
 
     int colunas = 8;
     int linhas = 8;
 
-    ArrayList<Peca> listaPecas= new ArrayList<>();
+    public ArrayList<Peca> listaPecas= new ArrayList<>();
 
     // peça selecionada para mover
     public Peca selectedPeca;
@@ -55,8 +57,10 @@ public class Tabuleiro extends JPanel{
             move.peca.yPos = move.linNova * tileSize;
 
             move.peca.ehPrimeiroMovimento = false;
-            capturar(move.capturar);
+            capturar(move.capturar, true);
         }
+        if (painelScore != null) painelScore.atualizaPlacar();
+        repaint(); // atualiza visual do tabuleiro
     }
 
     private void movePeao(Move move) {
@@ -72,6 +76,7 @@ public class Tabuleiro extends JPanel{
             enPassantTile = -1;
         }
 
+
         // promoções
         colorIndex = move.peca.ehBranco ? 0 : 7;
         if (move.linNova == colorIndex) {
@@ -84,16 +89,64 @@ public class Tabuleiro extends JPanel{
         move.peca.yPos = move.linNova * tileSize;
 
         move.peca.ehPrimeiroMovimento = false;
-        capturar(move.capturar);
+        capturar(move.capturar, true);
     }
 
     private void promovePeao(Move move) {
-        listaPecas.add(new Rainha(this, move.colNova, move.linNova, move.peca.ehBranco));
-        capturar(move.peca);
+        String[] options = {"Rainha", "Torre", "Bispo", "Cavalo"};
+
+        int escolha = JOptionPane.showOptionDialog(
+                this,
+                "Escolha a peça para promoção:",
+                "Promoção de Peão",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        String tipo = (escolha >= 0) ? options[escolha] : "Rainha";
+
+        if (move.capturar != null) {
+            capturar(move.capturar, false);
+            if (painelScore != null) painelScore.atualizaPlacar();
+        }
+
+
+        Peca promo = FabricadorPecas.promocaoPeao(tipo, this, move.linNova, move.colNova, move.peca.ehBranco);
+
+        //ajustar posição visual da peça promovida
+        promo.xPos = move.colNova * tileSize;
+        promo.yPos = move.linNova * tileSize;
+        promo.ehPrimeiroMovimento = false;
+
+        listaPecas.add(promo);
+        capturar(move.peca, false);
+
     }
 
-    public void capturar(Peca peca){
+    public void setPainelScore(PainelScore painelScore){
+        this.painelScore = painelScore;
+        if (this.painelScore != null) this.painelScore.atualizaPlacar();
+    }
+
+    public void capturar(Peca peca, boolean contabilizar){
+        if (peca == null) return;
+
+        // se for contabilizar (captura real), registra no painel/pontuação
+        if (contabilizar && painelScore != null) {
+            painelScore.registrarCaptura(peca);
+        }
+
+        // remove do tabuleiro (sempre)
         listaPecas.remove(peca);
+
+        // atualiza placar caso não tenha registrado acima (ou apenas força atualização)
+        if (!contabilizar && painelScore != null) {
+            painelScore.atualizaPlacar();
+        }
+
     }
 
     public boolean isValidMove(Move move){
@@ -123,74 +176,13 @@ public class Tabuleiro extends JPanel{
     }
 
 
-    public void adicionarPecas(){
+    public void adicionarPecas() {
+        listaPecas.addAll(FabricadorPecas.criarPecas(this));
 
-        // Pretas:
-        // Rei
-        listaPecas.add(new Rei(this, 0, 4, false));
-
-
-        // Rainha
-        listaPecas.add(new Rainha(this, 0, 3, false));
-
-        //Bispos
-        listaPecas.add(new Bispo(this, 0, 2, false));
-        listaPecas.add(new Bispo(this, 0, 5, false));
-
-        // Torres
-        listaPecas.add(new Torre(this, 0, 0, false));
-        listaPecas.add(new Torre(this, 0, 7, false));
-
-        // Cavalos
-        listaPecas.add(new Cavalo(this, 0, 1, false));
-        listaPecas.add(new Cavalo(this, 0, 6, false));
-
-        // Peoes
-        listaPecas.add(new Peao(this, 1, 0, false));
-        listaPecas.add(new Peao(this, 1, 1, false));
-        listaPecas.add(new Peao(this, 1, 2, false));
-        listaPecas.add(new Peao(this, 1, 3, false));
-        listaPecas.add(new Peao(this, 1, 4, false));
-        listaPecas.add(new Peao(this, 1, 5, false));
-        listaPecas.add(new Peao(this, 1, 6, false));
-        listaPecas.add(new Peao(this, 1, 7, false));
-
-
-
-        // Brancas:
-
-        // Rei
-        listaPecas.add(new Rei(this, 7, 4, true));
-
-
-        // Rainha
-        listaPecas.add(new Rainha(this, 7, 3, true));
-
-        //Bispos
-        listaPecas.add(new Bispo(this, 7, 2, true));
-        listaPecas.add(new Bispo(this, 7, 5, true));
-
-        // Torres
-        listaPecas.add(new Torre(this, 7, 0, true));
-        listaPecas.add(new Torre(this, 7, 7, true));
-
-        // Cavalos
-        listaPecas.add(new Cavalo(this, 7, 1, true));
-        listaPecas.add(new Cavalo(this, 7, 6, true));
-
-        // Peoes
-        listaPecas.add(new Peao(this, 6, 0, true));
-        listaPecas.add(new Peao(this, 6, 1, true));
-        listaPecas.add(new Peao(this, 6, 2, true));
-        listaPecas.add(new Peao(this, 6, 3, true));
-        listaPecas.add(new Peao(this, 6, 4, true));
-        listaPecas.add(new Peao(this, 6, 5, true));
-        listaPecas.add(new Peao(this, 6, 6, true));
-        listaPecas.add(new Peao(this, 6, 7, true));
     }
 
-
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
         for (int c = 0; c < colunas; c++) {
@@ -214,4 +206,6 @@ public class Tabuleiro extends JPanel{
             peca.paint(g2d);
         }
     }
+
+
 }

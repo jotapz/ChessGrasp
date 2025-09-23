@@ -1,6 +1,7 @@
 package pecas;
 
 import game.Tabuleiro;
+import util.enume.TiposPecas;
 
 import java.awt.image.BufferedImage;
 
@@ -15,6 +16,7 @@ public class Rei extends Peca{
 
         this.ehBranco = ehBranco;
         this.nome = "Rei";
+        this.tipo = TiposPecas.REI;
 
         this.sprite = sheet.getSubimage(0, ehBranco ? 0 : sheetScale, sheetScale, sheetScale).getScaledInstance(tabuleiro.tileSize, tabuleiro.tileSize, BufferedImage.SCALE_SMOOTH);
     }
