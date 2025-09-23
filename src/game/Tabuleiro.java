@@ -24,7 +24,7 @@ public class Tabuleiro extends JPanel{
     Input input = new Input(this);
     private Tabuleiro tabuleiro;
 
-    CheckScanner checkScanner = new CheckScanner(this);
+    XequeScanner checkScanner = new XequeScanner(this);
 
     public int enPassantTile = -1;
 

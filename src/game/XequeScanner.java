@@ -2,9 +2,9 @@ package game;
 
 import pecas.Peca;
 
-public class CheckScanner {
+public class XequeScanner {
     Tabuleiro tabuleiro;
-    public CheckScanner(Tabuleiro tabuleiro){
+    public XequeScanner(Tabuleiro tabuleiro){
         this.tabuleiro = tabuleiro;
     }
 
@@ -38,8 +38,10 @@ public class CheckScanner {
 
     private  boolean hitByTorre(int coluna, int linha, Peca rei, int reiCol, int reiLin, int colVal, int linVal){
         for (int i = 1; i < 8; i++) {
-            if(reiCol + (i * colVal) == coluna && reiLin + (i * linVal) == linha){
-                break;
+            if (tabuleiro.selectedPeca != null && !tabuleiro.selectedPeca.nome.equals("Rei")) {
+                if (reiCol + (i * colVal) == coluna && reiLin + (i * linVal) == linha) {
+                    break;
+                }
             }
             Peca peca = tabuleiro.getPeca(reiCol + (i * colVal), reiLin + (i * linVal));
             if (peca != null && peca != tabuleiro.selectedPeca){
@@ -55,8 +57,10 @@ public class CheckScanner {
 
     private  boolean hitByBispo(int coluna, int linha, Peca rei, int reiCol, int reiLin, int colVal, int linVal){
         for (int i = 1; i < 8; i++) {
-            if(reiCol - (i * colVal) == coluna && reiLin - (i * linVal) == linha){
-                break;
+            if (tabuleiro.selectedPeca != null && !tabuleiro.selectedPeca.nome.equals("Rei")) {
+                if (reiCol - (i * colVal) == coluna && reiLin - (i * linVal) == linha) {
+                    break;
+                }
             }
             Peca peca = tabuleiro.getPeca(reiCol - (i * colVal), reiLin - (i * linVal));
             if (peca != null && peca != tabuleiro.selectedPeca){
@@ -70,43 +74,43 @@ public class CheckScanner {
     }
 
     private boolean hitByCavalo(int coluna, int linha, Peca rei, int reiCol, int reiLin){
-        return  checkCavalo(tabuleiro.getPeca(reiCol - 1, reiLin - 2), rei, coluna, linha) ||
-                checkCavalo(tabuleiro.getPeca(reiCol + 1, reiLin - 2), rei, coluna, linha) ||
-                checkCavalo(tabuleiro.getPeca(reiCol + 2, reiLin - 1), rei, coluna, linha) ||
-                checkCavalo(tabuleiro.getPeca(reiCol + 2, reiLin + 1), rei, coluna, linha) ||
-                checkCavalo(tabuleiro.getPeca(reiCol + 1, reiLin + 2), rei, coluna, linha) ||
-                checkCavalo(tabuleiro.getPeca(reiCol - 1, reiLin + 2), rei, coluna, linha) ||
-                checkCavalo(tabuleiro.getPeca(reiCol - 2, reiLin + 1), rei, coluna, linha) ||
-                checkCavalo(tabuleiro.getPeca(reiCol - 2, reiLin - 1), rei, coluna, linha);
+        return  xequeCavalo(tabuleiro.getPeca(reiCol - 1, reiLin - 2), rei, coluna, linha) ||
+                xequeCavalo(tabuleiro.getPeca(reiCol + 1, reiLin - 2), rei, coluna, linha) ||
+                xequeCavalo(tabuleiro.getPeca(reiCol + 2, reiLin - 1), rei, coluna, linha) ||
+                xequeCavalo(tabuleiro.getPeca(reiCol + 2, reiLin + 1), rei, coluna, linha) ||
+                xequeCavalo(tabuleiro.getPeca(reiCol + 1, reiLin + 2), rei, coluna, linha) ||
+                xequeCavalo(tabuleiro.getPeca(reiCol - 1, reiLin + 2), rei, coluna, linha) ||
+                xequeCavalo(tabuleiro.getPeca(reiCol - 2, reiLin + 1), rei, coluna, linha) ||
+                xequeCavalo(tabuleiro.getPeca(reiCol - 2, reiLin - 1), rei, coluna, linha);
     }
 
-    private boolean checkCavalo(Peca p, Peca r, int coluna, int linha){
+    private boolean xequeCavalo(Peca p, Peca r, int coluna, int linha){
         return p != null && !tabuleiro.mesmoTime(p, r) && p.nome.equals("Cavalo") && !(p.coluna == coluna && p.linha == linha);
     }
 
 
     private boolean hitByRei(Peca rei, int reiCol, int reiLin){
-        return  checkRei(tabuleiro.getPeca(reiCol - 1, reiLin - 1), rei) ||
-                checkRei(tabuleiro.getPeca(reiCol + 1, reiLin - 1), rei) ||
-                checkRei(tabuleiro.getPeca(reiCol, reiLin - 1), rei) ||
-                checkRei(tabuleiro.getPeca(reiCol - 1, reiLin), rei) ||
-                checkRei(tabuleiro.getPeca(reiCol + 1, reiLin), rei) ||
-                checkRei(tabuleiro.getPeca(reiCol - 1, reiLin + 1), rei) ||
-                checkRei(tabuleiro.getPeca(reiCol + 1, reiLin + 1), rei) ||
-                checkRei(tabuleiro.getPeca(reiCol, reiLin + 1), rei);
+        return  xequeRei(tabuleiro.getPeca(reiCol - 1, reiLin - 1), rei) ||
+                xequeRei(tabuleiro.getPeca(reiCol + 1, reiLin - 1), rei) ||
+                xequeRei(tabuleiro.getPeca(reiCol, reiLin - 1), rei) ||
+                xequeRei(tabuleiro.getPeca(reiCol - 1, reiLin), rei) ||
+                xequeRei(tabuleiro.getPeca(reiCol + 1, reiLin), rei) ||
+                xequeRei(tabuleiro.getPeca(reiCol - 1, reiLin + 1), rei) ||
+                xequeRei(tabuleiro.getPeca(reiCol + 1, reiLin + 1), rei) ||
+                xequeRei(tabuleiro.getPeca(reiCol, reiLin + 1), rei);
     }
 
-    private boolean checkRei(Peca p, Peca r){
-        return p != null && tabuleiro.mesmoTime(p, r) && p.nome.equals("Rei");
+    private boolean xequeRei(Peca p, Peca r){
+        return p != null && !tabuleiro.mesmoTime(p, r) && p.nome.equals("Rei");
     }
 
     private boolean hitByPeao(int coluna, int linha, Peca rei, int reiCol, int reiLin){
         int colorVal = rei.ehBranco ? -1 : 1;
-        return  checkPeao(tabuleiro.getPeca(reiCol + 1, reiLin + colorVal), rei, coluna, linha) ||
-                checkPeao(tabuleiro.getPeca(reiCol - 1, reiLin + colorVal), rei, coluna, linha);
+        return  xequePeao(tabuleiro.getPeca(reiCol + 1, reiLin + colorVal), rei, coluna, linha) ||
+                xequePeao(tabuleiro.getPeca(reiCol - 1, reiLin + colorVal), rei, coluna, linha);
     }
 
-    private boolean checkPeao(Peca p, Peca r, int coluna, int linha){
+    private boolean xequePeao(Peca p, Peca r, int coluna, int linha){
         return p != null && !tabuleiro.mesmoTime(p, r) && p.nome.equals("Peao") && !(p.coluna == coluna && p.linha == linha);
     }
 

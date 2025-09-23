@@ -25,7 +25,7 @@ public class Peao extends Peca{
     public boolean isValidMovement(int colunas, int linhas) {
         int colorIndex = ehBranco ? 1: -1;
 
-        //
+        // Captura direita
         if (this.coluna == colunas && linhas == this.linha - colorIndex && tabuleiro.getPeca(colunas, linhas) == null){
             return true;
         }
@@ -53,12 +53,12 @@ public class Peao extends Peca{
 //            return true;
 //        }
 
-        // capturar esquerda ou direita
-        if (Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha) != null)
+        // captura esquerda ou direita
+        if (Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(colunas, linhas) != null)
             return true;
 
         // en passant esquerda ou direita
-        if (tabuleiro.getTileNum(coluna, linha) == tabuleiro.enPassantTile && Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha + colorIndex) != null)
+        if (tabuleiro.getTileNum(colunas, linhas) == tabuleiro.enPassantTile && Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha + colorIndex) != null)
             return true;
 
 

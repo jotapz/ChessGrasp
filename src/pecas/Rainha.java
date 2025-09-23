@@ -26,7 +26,7 @@ public class Rainha extends Peca{
     }
 
     public boolean moveCollidesWithPiece(int colunas, int linhas) {
-        if (this.coluna == coluna || this.linha == linha) {
+        if (this.coluna == colunas || this.linha == linhas) {
             //esquerda
             if (this.coluna > colunas)
                 for (int c = this.coluna - 1; c > colunas; c--)
@@ -34,17 +34,17 @@ public class Rainha extends Peca{
                         return true;
             //direita
             if (this.coluna < colunas)
-                for (int c = this.coluna + 1; c > colunas; c++)
+                for (int c = this.coluna + 1; c < colunas; c++)
                     if (tabuleiro.getPeca(c, this.linha) != null)
                         return true;
             //cima
             if (this.linha > linhas)
-                for (int l = this.linha - 1; l > colunas; l--)
+                for (int l = this.linha - 1; l > linhas; l--)
                     if (tabuleiro.getPeca(this.linha, l) != null)
                         return true;
             //baixo
             if (this.linha < linhas)
-                for (int l = this.linha + 1; l < colunas; l++)
+                for (int l = this.linha + 1; l < linhas; l++)
                     if (tabuleiro.getPeca(this.linha, l) != null)
                         return true;
         } else {
