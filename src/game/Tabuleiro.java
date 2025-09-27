@@ -10,6 +10,13 @@ import util.classes.PainelScore;
 
 public class Tabuleiro extends JPanel {
 
+
+    private void loadPositionFromFEN() {
+    }
+    public String fenStartingPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    public final String fenTest = "r3k2r/8/8/8/2Pp4/8/8/R3K2R b KQkq c3 0 1";
+    public final String myFEN = "r3k2r/8/8/8/2Pp4/8/8/R3K2R b w - - 0 1";
+
     public int tileSize = 85;
     private PainelScore painelScore;
 
@@ -30,7 +37,10 @@ public class Tabuleiro extends JPanel {
     // === CONTROLE DE TURNO ===
     // true = vez das brancas; false = vez das pretas
     private boolean turnoBrancas = true;
-    public boolean isTurnoBrancas() { return turnoBrancas; }
+
+    public boolean isTurnoBrancas() {
+        return turnoBrancas;
+    }
 
     public Tabuleiro() {
         this.setPreferredSize(new Dimension(colunas * tileSize, linhas * tileSize));
@@ -38,6 +48,8 @@ public class Tabuleiro extends JPanel {
 
         this.addMouseListener(input);
         this.addMouseMotionListener(input);
+
+        loadPositionFromFEN();
 
         if (painelScore != null) painelScore.atualizaPlacar();
     }
@@ -52,6 +64,9 @@ public class Tabuleiro extends JPanel {
         return null;
     }
 
+
+    private void moveRei(Move move) {
+    }
     // Aplica movimento respeitando turno e validade
     public void makeMove(Move move) {
         if (move == null || move.peca == null) return;
@@ -70,14 +85,19 @@ public class Tabuleiro extends JPanel {
         if (move.peca.nome.equals("Peao")) {
             movePeao(move);
         } else {
-            // guarda coluna antiga para detectar roque
+            enPassantTile = -1;
+        }
+        if (move.peca.nome.equals("Rei")) {
+            moveRei((move)); }
+
+            {    // guarda coluna antiga para detectar roque
             int colAntiga = move.peca.coluna;
 
             // move a peça
             move.peca.coluna = move.colNova;
-            move.peca.linha  = move.linNova;
-            move.peca.xPos   = move.colNova * tileSize;
-            move.peca.yPos   = move.linNova * tileSize;
+            move.peca.linha = move.linNova;
+            move.peca.xPos = move.colNova * tileSize;
+            move.peca.yPos = move.linNova * tileSize;
 
             // captura (se houver) e flags
             move.peca.ehPrimeiroMovimento = false;
@@ -92,12 +112,13 @@ public class Tabuleiro extends JPanel {
                 if (torre != null && "Torre".equals(torre.nome) && torre.ehBranco == move.peca.ehBranco) {
                     int novaColTorre = move.colNova - dir; // f-file (5) no pequeno, d-file (3) no grande
                     torre.coluna = novaColTorre;
-                    torre.linha  = move.linNova;
-                    torre.xPos   = novaColTorre * tileSize;
-                    torre.yPos   = move.linNova  * tileSize;
+                    torre.linha = move.linNova;
+                    torre.xPos = novaColTorre * tileSize;
+                    torre.yPos = move.linNova * tileSize;
                     torre.ehPrimeiroMovimento = false;
                 }
             }
+
         }
 
         // atualiza placar (pontuação e turno)
@@ -150,9 +171,9 @@ public class Tabuleiro extends JPanel {
         }
 
         move.peca.coluna = move.colNova;
-        move.peca.linha  = move.linNova;
-        move.peca.xPos   = move.colNova * tileSize;
-        move.peca.yPos   = move.linNova * tileSize;
+        move.peca.linha = move.linNova;
+        move.peca.xPos = move.colNova * tileSize;
+        move.peca.yPos = move.linNova * tileSize;
 
         move.peca.ehPrimeiroMovimento = false;
         capturar(move.capturar, true);
@@ -244,6 +265,79 @@ public class Tabuleiro extends JPanel {
         }
         return null;
     }
+
+    //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    public void loadPositionFromFEn(String fenString) {
+        listaPecas.clear();
+        String[] parts = fenString.split(" ");
+
+        //organizar peças
+        String position = parts[0];
+        int linha = 0;
+        int coluna = 0;
+        for (int i = 0; i < position.length(); i++) {
+            char ch = position.charAt(i);
+
+            if (ch == '/') {
+                linha++;
+                coluna = 0;
+            } else if (Character.isDigit(ch)) {
+                coluna += Character.getNumericValue(ch);
+            } else {
+                boolean ehBranco = Character.isUpperCase(ch);
+                char pecaChar = Character.toLowerCase(ch);
+                switch (pecaChar) {
+                    case 'r': // r = Rook (Torre)
+                        listaPecas.add(new Torre(this, coluna, linha, ehBranco));
+                        break;
+                    case 'n': // n = Knight (Cavalo)
+                        listaPecas.add(new Cavalo(this, coluna, linha, ehBranco));
+                        break;
+                    case 'b': // b = Bishop (Bispo)
+                        listaPecas.add(new Bispo(this, coluna, linha, ehBranco));
+                        break;
+                    case 'q': // q = Queen (Rainha)
+                        listaPecas.add(new Rainha(this, coluna, linha, ehBranco));
+                        break;
+                    case 'k': // k = King (Rei)
+                        listaPecas.add(new Rei(this, coluna, linha, ehBranco));
+                        break;
+                    case 'p': // p = Pawn (Peão)
+                        listaPecas.add(new Peao(this, coluna, linha, ehBranco));
+                        break;
+                }
+                coluna++;
+            }
+        }
+
+        //cor para mover
+        boolean ehBrancoparaMover = parts[1].equals("w");
+
+        //roque
+        Peca bqr = getPeca(0, 0);
+        if (bqr instanceof Torre) {
+            bqr.ehPrimeiroMovimento = parts[2].contains("q");
+        }
+        Peca bkr = getPeca(7, 0);
+        if (bkr instanceof Torre) {
+            bkr.ehPrimeiroMovimento = parts[2].contains("k");
+        }
+        Peca wqr = getPeca(0, 7);
+        if (wqr instanceof Torre) {
+            wqr.ehPrimeiroMovimento = parts[2].contains("Q");
+        }
+        Peca wkr = getPeca(7, 7);
+        if (wkr instanceof Torre) {
+            wkr.ehPrimeiroMovimento = parts[2].contains("K");
+        }
+//casa en passant
+        if (parts[3].equals("-")) {
+            enPassantTile = -1;
+        } else {
+         enPassantTile = (7 - (parts[3].charAt(1) - '1')) * 8 + (parts[3].charAt(0) - 'a');
+        }
+    }
+
 
     public void adicionarPecas() {
         listaPecas.addAll(FabricadorPecas.criarPecas(this));
