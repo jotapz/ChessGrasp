@@ -194,7 +194,6 @@ public class Tabuleiro extends JPanel {
         move.peca.yPos = move.linNova * tileSize;
 
         move.peca.ehPrimeiroMovimento = false;
-        capturar(move.capturar, true);
     }
 
     private void promovePeao(Move move) {
@@ -212,6 +211,11 @@ public class Tabuleiro extends JPanel {
         );
 
         String tipo = (escolha >= 0) ? options[escolha] : "Rainha";
+
+        if (!historicoDeMovimentos.isEmpty()) {
+            Movimento ultimoMovimento = historicoDeMovimentos.get(historicoDeMovimentos.size() - 1);
+            ultimoMovimento.setPecaPromovida(tipo);
+        }
 
         if (move.capturar != null) {
             capturar(move.capturar, false);

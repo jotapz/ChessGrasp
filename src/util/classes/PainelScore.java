@@ -86,16 +86,28 @@ public class PainelScore extends JPanel {
 
     public void atualizarHistorico(List<Movimento> historico) {
         StringBuilder texto = new StringBuilder();
-        int numeroJogada = 1;
-        for (int i = 0; i < historico.size(); i++) {
-            Movimento mov = historico.get(i);
-            if (mov.getPecaMovida().ehBranco) {
-                texto.append(String.format("%2d. %-18s", numeroJogada, mov.toString()));
-                numeroJogada++;
-            } else {
-                texto.append(String.format("%-18s\n", mov.toString()));
+
+        // O loop agora vai pular de 2 em 2, processando o par de jogadas (brancas e pretas)
+        for (int i = 0; i < historico.size(); i += 2) {
+            // Calcula o número da jogada. Ex: i=0 -> jogada 1; i=2 -> jogada 2
+            int numeroJogada = (i / 2) + 1;
+            texto.append(numeroJogada).append(". ");
+
+            // Pega a jogada das brancas (que sempre existirá no índice 'i')
+            Movimento movBrancas = historico.get(i);
+            texto.append(movBrancas.toString());
+
+            // Agora, verifica se a jogada correspondente das pretas já aconteceu
+            if (i + 1 < historico.size()) {
+                Movimento movPretas = historico.get(i + 1);
+                texto.append("   "); // Adiciona um espaço para separar
+                texto.append(movPretas.toString());
             }
+
+            // Adiciona uma quebra de linha no final do par (ou da jogada das brancas, se for a última)
+            texto.append("\n");
         }
+
         areaHistorico.setText(texto.toString());
 
         // Auto-scroll para o final
