@@ -38,7 +38,7 @@ public class XequeScanner {
         return atacado;
     }
 
-    /** Existe ALGUM movimento legal para o lado (ehBranco)? */
+    /** Existe ALGUM game.movimento legal para o lado (ehBranco)? */
     public boolean temMovimentoLegal(boolean ehBranco) {
         // para cada peça do lado a jogar
         for (Peca p : tabuleiro.listaPecas) {
@@ -75,7 +75,7 @@ public class XequeScanner {
         return !estaEmXeque(ehBranco) && !temMovimentoLegal(ehBranco);
     }
 
-    // === Verificação de xeque durante um movimento hipotético ===
+    // === Verificação de xeque durante um game.movimento hipotético ===
 
     public boolean reiEhAtacado(Move move){
         Peca rei = tabuleiro.achaRei(move.peca.ehBranco);

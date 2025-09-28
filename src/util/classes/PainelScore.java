@@ -2,9 +2,11 @@ package util.classes;
 
 import game.Tabuleiro;
 import pecas.Peca;
+import game.movimento.Movimento;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class PainelScore extends JPanel {
     private Tabuleiro tabuleiro;
@@ -14,12 +16,17 @@ public class PainelScore extends JPanel {
     private JLabel labelPretas;
     private JLabel labelTurn;
 
+
+    private JLabel historicoTitulo;
+    private JTextArea areaHistorico;
+    private JScrollPane scrollHistorico;
+
     public PainelScore(Tabuleiro tabuleiro){
         this.tabuleiro = tabuleiro;
         this.pontuacao = new Pontuacao();
 
         // Configurações do painel
-        setPreferredSize(new Dimension(160, 120));
+        setPreferredSize(new Dimension(200, 500));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
@@ -48,6 +55,22 @@ public class PainelScore extends JPanel {
         labelPretas.setForeground(Color.WHITE);
         labelPretas.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        historicoTitulo = new JLabel("Histórico");
+        historicoTitulo.setFont(new Font("SansSerif", Font.BOLD, 18));
+        historicoTitulo.setForeground(Color.WHITE);
+        historicoTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        areaHistorico = new JTextArea();
+        areaHistorico.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        areaHistorico.setForeground(Color.WHITE);
+        areaHistorico.setEditable(false);
+        areaHistorico.setOpaque(false); // Para manter seu fundo transparente
+
+        scrollHistorico = new JScrollPane(areaHistorico);
+        scrollHistorico.setOpaque(false); // Para o ScrollPane ser transparente
+        scrollHistorico.getViewport().setOpaque(false); // E a área interna também
+        scrollHistorico.setBorder(null); // Remove a borda padrão
+
         // ordem no painel
         add(titulo);
         add(Box.createRigidArea(new Dimension(0, 6)));
@@ -55,6 +78,28 @@ public class PainelScore extends JPanel {
         add(Box.createRigidArea(new Dimension(0, 8)));
         add(labelBrancas);
         add(labelPretas);
+        add(Box.createRigidArea(new Dimension(0, 20))); // Espaço maior
+        add(historicoTitulo);
+        add(Box.createRigidArea(new Dimension(0, 6)));
+        add(scrollHistorico);
+    }
+
+    public void atualizarHistorico(List<Movimento> historico) {
+        StringBuilder texto = new StringBuilder();
+        int numeroJogada = 1;
+        for (int i = 0; i < historico.size(); i++) {
+            Movimento mov = historico.get(i);
+            if (mov.getPecaMovida().ehBranco) {
+                texto.append(String.format("%2d. %-18s", numeroJogada, mov.toString()));
+                numeroJogada++;
+            } else {
+                texto.append(String.format("%-18s\n", mov.toString()));
+            }
+        }
+        areaHistorico.setText(texto.toString());
+
+        // Auto-scroll para o final
+        areaHistorico.setCaretPosition(areaHistorico.getDocument().getLength());
     }
 
     public void registrarCaptura(Peca p) {

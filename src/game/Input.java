@@ -23,6 +23,14 @@ public class Input extends MouseAdapter {
 
         Peca p = tabuleiro.getPeca(col, lin);
 
+        if (p != null) {
+            if (p.ehBranco) {
+                System.out.println("Peça clicada: " + p.nome + " (Branca)");
+            } else {
+                System.out.println("Peça clicada: " + p.nome + " (Preta)");
+            }
+        }
+
         // só permite selecionar se for a vez daquela cor
         if (p != null && p.ehBranco == tabuleiro.isTurnoBrancas()) {
             tabuleiro.selectedPeca = p;

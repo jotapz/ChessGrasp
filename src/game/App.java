@@ -2,7 +2,6 @@ package game;
 
 import java.awt.*;
 import javax.swing.*;
-
 import util.classes.PainelScore;
 
 public class App {

@@ -28,7 +28,7 @@ public class Rei extends Peca {
         int dx = Math.abs(colunas - this.coluna);
         int dy = Math.abs(linhas - this.linha);
 
-        // movimento normal do rei (1 casa em qualquer direção)
+        // game.movimento normal do rei (1 casa em qualquer direção)
         if (Math.max(dx, dy) == 1) {
             return true;
         }

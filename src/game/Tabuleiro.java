@@ -2,11 +2,14 @@ package game;
 
 import pecas.*;
 
+import java.util.List;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import util.classes.FabricadorPecas;
 import util.classes.PainelScore;
+import game.movimento.Casa;
+import game.movimento.Movimento;
 
 public class Tabuleiro extends JPanel {
 
@@ -24,6 +27,7 @@ public class Tabuleiro extends JPanel {
     int linhas = 8;
 
     public ArrayList<Peca> listaPecas = new ArrayList<>();
+    private List<Movimento> historicoDeMovimentos;
 
     // peça selecionada para mover
     public Peca selectedPeca;
@@ -44,6 +48,7 @@ public class Tabuleiro extends JPanel {
 
     public Tabuleiro() {
         this.setPreferredSize(new Dimension(colunas * tileSize, linhas * tileSize));
+        this.historicoDeMovimentos = new ArrayList<>();
         adicionarPecas();
 
         this.addMouseListener(input);
@@ -67,7 +72,7 @@ public class Tabuleiro extends JPanel {
 
     private void moveRei(Move move) {
     }
-    // Aplica movimento respeitando turno e validade
+    // Aplica game.movimento respeitando turno e validade
     public void makeMove(Move move) {
         if (move == null || move.peca == null) return;
 
@@ -76,12 +81,25 @@ public class Tabuleiro extends JPanel {
             return;
         }
 
-        // 2) Checa se o movimento é válido (alcance, colisão, não deixa rei em xeque, etc.)
+        // 2) Checa se o game.movimento é válido (alcance, colisão, não deixa rei em xeque, etc.)
         if (!isValidMove(move)) {
             return;
         }
 
-        // 3) Aplica o movimento de fato
+        Casa casaOrigem = new Casa(move.peca.linha, move.peca.coluna);
+        Casa casaDestino = new Casa(move.linNova, move.colNova);
+        Peca pecaCapturada = move.capturar;
+        Movimento registro = new Movimento(move.peca, casaOrigem, casaDestino, pecaCapturada);
+        this.historicoDeMovimentos.add(registro);
+
+        // Linha de teste para você ver o resultado no console
+        System.out.println("Jogada registrada: " + registro);
+
+        if (painelScore != null) {
+            painelScore.atualizarHistorico(historicoDeMovimentos);
+        }
+
+        // 3) Aplica o game.movimento de fato
         if (move.peca.nome.equals("Peao")) {
             movePeao(move);
         } else {
@@ -382,6 +400,7 @@ public class Tabuleiro extends JPanel {
         adicionarPecas();
 
         // zera estados auxiliares
+        historicoDeMovimentos.clear();
         enPassantTile = -1;
         selectedPeca = null;
         turnoBrancas = true; // brancas começam
