@@ -30,7 +30,7 @@ public class Peao extends Peca{
             return true;
         }
 
-        if (this.coluna == (ehBranco ? 6 : 1) && ehPrimeiroMovimento && this.coluna == colunas && linhas == this.linha - colorIndex * 2 && tabuleiro.getPeca(colunas, linhas) == null && tabuleiro.getPeca(colunas, linhas + colorIndex) == null){
+        if (this.linha == (ehBranco ? 6 : 1) && ehPrimeiroMovimento && this.coluna == colunas && linhas == this.linha - colorIndex * 2 && tabuleiro.getPeca(colunas, linhas) == null && tabuleiro.getPeca(colunas, linhas + colorIndex) == null){
             return true;
         }
 
