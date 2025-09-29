@@ -58,7 +58,7 @@ public class Peao extends Peca{
             return true;
 
         // en passant esquerda ou direita
-        if (tabuleiro.getTileNum(colunas, linhas) == tabuleiro.enPassantTile && Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(coluna, linha + colorIndex) != null)
+        if (tabuleiro.getTileNum(colunas, linhas) == tabuleiro.enPassantTile && Math.abs(colunas - this.coluna) == 1 && linhas == this.linha - colorIndex && tabuleiro.getPeca(colunas, linhas + colorIndex) != null)
             return true;
 
 
